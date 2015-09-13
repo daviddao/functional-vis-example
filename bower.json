@@ -1,0 +1,23 @@
+{
+  "name": "biojs-2-demo-component",
+  "version": "0.1.0",
+  "authors": [
+    "Michiel Helvensteijn <mhelvens@gmail.com>",
+    "Sebastian Wilzbach <seb@wilzba.ch>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "kefir": "~1.1.0",
+    "jquery": "~2.1.3",
+    "lodash": "~3.4.0",
+    "d3pie": "~0.1.6",
+    "c3": "~0.4.9"
+  }
+}

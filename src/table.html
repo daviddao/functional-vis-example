@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<title>BioJS Table</title>
+	<link rel="stylesheet" href="table.css" />
+	<link rel="stylesheet" href="../bower_components/c3/c3.css" />
+</head>
+<body>
+
+<div class="biojs_widget">
+	<div id="sliderMin"></div>
+	<div id="sliderMax"></div>
+</div>
+
+<div>
+	<div id="chartOrganisms"></div>
+	<div id="chartCountries"></div>
+</div>
+
+<div id="table"></div>
+
+<script src="../bower_components/kefir/dist/kefir.js"></script>
+<script src="../bower_components/jquery/dist/jquery.js"></script>
+<script src="../bower_components/lodash/lodash.js"></script>
+<script src="../bower_components/d3/d3.js"></script>
+<script src="../bower_components/c3/c3.js"></script>
+
+
+<script src="utils.js"></script>
+<script src="widgets/slider.js"></script>
+<script src="widgets/table.js"></script>
+<script src="widgets/chart.js"></script>
+<script src="widgets/pie.js"></script>
+
+<script>
+
+	/* the dataset, and a Kefir property based on it */
+	var dataset = [
+		{id: 1, organism: "human",   country: "de",  name: "tumour1", seq: "AAAAA"},
+		{id: 2, organism: "human",   country: "de",  name: "tumour2", seq: "AAAAC"},
+		{id: 3, organism: "cow",     country: "en",  name: "tumour3", seq: "AGACA"},
+		{id: 4, organism: "chicken", country: "en",  name: "tumour4", seq: "AGACC"},
+		{id: 5, organism: "chicken", country: "en",  name: "tumour5", seq: "AGTCC"}
+	];
+	var datasetProperty = newProperty(dataset);
+
+
+	/* the global filter */
+	var globalFilter = newProperty([]);
+	function filteredArr(origin) {
+		return Kefir.combine([datasetProperty, globalFilter], function (entities, filter) {
+			var result = entities;
+			filter.forEach(function (fltr) {
+				if (fltr.origin !== origin) {
+					result = result.filter(fltr.predicate);
+				}
+			});
+			return result;
+		}).toProperty();
+	}
+	function applyFilter(origin, predicate) {
+		return function (A) {
+			var value = A[0], gFilter = A[1];
+			var newFilter = { predicate: predicate.bind(null, value), origin: origin };
+			var newGlobalFilter = [];
+			newGlobalFilter.push.apply(newGlobalFilter, gFilter); // shallow clone filter stream value
+			var index;
+			if (newGlobalFilter.some(function (filter, i) {
+				if (filter.origin === origin) {
+					index = i;
+					return true;
+				}
+			})) {
+				newGlobalFilter[index] = newFilter;
+			} else {
+				newGlobalFilter.push(newFilter);
+			}
+			globalFilter.emit(newGlobalFilter);
+		};
+	}
+	function filterChangingStream(origin, property, predicate) {
+		return Kefir.sampledBy([globalFilter], [property], function (gf, s) { return [s, gf] }).onValue(applyFilter(origin, predicate));
+	}
+	
+	
+	/* the 'min' slider */
+	var sliderMin = new BioJsSlider({text: "Min: ", min: 1, value: 1, max: dataset.length, element: $('#sliderMin')});
+	filterChangingStream("sliderMin", sliderMin.value, function (min, obj) { return obj.id >= min } );
+	
+	
+	/* the 'max' slider */
+	var sliderMax = new BioJsSlider({text: "Max: ", min: 1, value: dataset.length, max: dataset.length, element: $('#sliderMax')});
+	filterChangingStream("sliderMax", sliderMax.value, function (max, obj) { return obj.id <= max } );
+	
+	
+	/* the 'organism' pie chart */
+	var chartOrganism = new BioJsPieChart({element: $('#chartOrganisms'), selected: _.uniq(_.pluck(dataset, 'organism'))});
+	chartOrganism.model.plug(filteredArr('chartOrganism').map(function(arr){ return _.pluck(arr, 'organism') }));
+	filterChangingStream("chartOrganism", chartOrganism.selected, function(selectedArr, obj){
+		return selectedArr.indexOf(obj.organism) >= 0;
+	});
+	
+	
+	// /* the 'country' pie chart */
+	var chartCountries = new BioJsPieChart({element: $('#chartCountries'), selected: _.uniq(_.pluck(dataset, 'country'))});
+	chartCountries.model.plug(filteredArr('chartCountries').map(function(arr){ return _.pluck(arr, 'country') }));
+	filterChangingStream("chartCountries", chartCountries.selected, function(selectedArr, obj){
+		return selectedArr.indexOf(obj.country) >= 0;
+	});
+
+
+	/* the data table */
+	var table1 = new BioJsTable({element: $('#table')});
+	table1.model.plug(filteredArr());
+	
+</script>
+
+</body>
+</html>

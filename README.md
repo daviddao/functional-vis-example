@@ -1,2 +1,0 @@
-# functional-vis-example
-example

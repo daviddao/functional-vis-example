@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<title>BioJS component</title>
+</head>
+<body>
+	
+<div id="min"></div>
+<div id="max"></div>
+<div id="step"></div>
+	
+	
+<div id="dummyEl1"></div>
+<div id="dummyEl2"></div>
+
+<script src="../bower_components/kefir/dist/kefir.js"></script>
+<script src="../bower_components/jquery/dist/jquery.js"></script>
+<script src="utils.js"></script>
+<script src="slider.js"></script>
+
+<script>
+	
+	var minSlider  = new BioJsSlider({text: "Min: " , min: 0, max: 99, value: 0, element: $("#min")});
+	var maxSlider  = new BioJsSlider({text: "Max: " , min: 1, max: 100, value: 10, element: $("#max")});
+	var stepSlider = new BioJsSlider({text: "Step: ", min: 1, max: 10, value: 1,  element: $("#step")});
+	
+	var slider1 = new BioJsSlider({text: "A: ", element: $("#dummyEl1")});
+	var slider2 = new BioJsSlider({text: "B: ", element: $("#dummyEl2")});
+	
+	slider1.value.plug(slider2.value);
+	slider2.value.plug(slider1.value);
+	
+	var maxStream = Kefir.combine([minSlider.value, maxSlider.value], function(a, b){ return Math.max(a,b) })
+	maxSlider.value.plug(maxStream);
+	var minStream = Kefir.combine([maxSlider.value, minSlider.value], function(b, a){ return Math.min(a,b) })
+	minSlider.value.plug(minStream);
+	
+	
+	slider1.min.plug(minSlider.value);
+	slider2.min.plug(minSlider.value);
+	
+	slider1.max.plug(maxSlider.value);
+	slider2.max.plug(maxSlider.value);
+	
+	slider1.step.plug(stepSlider.value);
+	slider2.step.plug(stepSlider.value);
+	
+	
+</script>
+
+</body>
+</html>

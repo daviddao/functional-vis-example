@@ -1,0 +1,21 @@
+{
+  "name": "biojs-2-demo-component",
+  "author": [
+    "Michiel Helvensteijn <mhelvens@gmail.com>",
+    "Sebastian Wilzbach <seb@wilzba.ch>"
+  ],
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^4.7.1",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^4.0.0",
+    "gulp-eol": "^0.1.1",
+    "gulp-ext-replace": "^0.1.0"
+  }
+}

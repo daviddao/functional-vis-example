@@ -1,0 +1,21 @@
+table.BioJsTable {
+	border-style: solid none none solid;
+	border-width: 1px;
+	border-color: black;
+	border-spacing: 0px;
+}
+
+table.BioJsTable td, table.BioJsTable th {
+	border-style: none solid solid none;
+	border-width: 1px;
+	border-color: black;
+	padding: 1px 4px;
+}
+
+.c3-chart-arc.c3-target.c3-defocused {
+  opacity: 1 !important;
+}
+
+.biojs_widget {
+	display: inline-block;
+}
