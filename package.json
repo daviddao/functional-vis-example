@@ -1,8 +1,7 @@
 {
-  "name": "biojs-2-demo-component",
+  "name": "fun-vis-biojs",
   "author": [
-    "Michiel Helvensteijn <mhelvens@gmail.com>",
-    "Sebastian Wilzbach <seb@wilzba.ch>"
+    "David Dao"
   ],
   "version": "0.1.0",
   "description": "",
